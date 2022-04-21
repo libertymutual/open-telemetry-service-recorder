@@ -14,7 +14,7 @@ class Log:
         self.logs_data = LogsData()
         self.resource_logs = ResourceLogs()
         self.key_value = KeyValue()
-        self.otlp_endpoint = 'localhost:7777'
+        self.otlp_endpoint = 'localhost:4317'
         
         if 'OTLP_ENDPOINT' in os.environ:
             self.otlp_endpoint = os.environ["OTLP_ENDPOINT"]
@@ -45,7 +45,6 @@ class Log:
  
     def record(self):
         with grpc.insecure_channel(self.otlp_endpoint) as channel:
-            stub = logs_service_pb2_grpc.LogsServiceStub(channel)
             try:
                 stub = logs_service_pb2_grpc.LogsServiceStub(channel)
                 response = stub.Export(self.create_log())
