@@ -1,4 +1,4 @@
-from opentelemetry.proto.logs.v1.logs_pb2 import LogRecord, InstrumentationLibraryLogs, ResourceLogs, LogsData
+from opentelemetry.proto.logs.v1.logs_pb2 import LogRecord, ResourceLogs, LogsData, ScopeLogs
 from opentelemetry.proto.common.v1.common_pb2 import KeyValue
 import opentelemetry.proto.collector.logs.v1.logs_service_pb2_grpc as logs_service_pb2_grpc
 import time, grpc, os
@@ -9,18 +9,18 @@ class Log:
         self.body = body
         self.log_attributes = log_attributes
         self.resource_attributes = resource_attributes
-        self.instrumentation_library_logs = InstrumentationLibraryLogs()
+        self.scope_logs = ScopeLogs()
         self.log_record = LogRecord()
         self.logs_data = LogsData()
         self.resource_logs = ResourceLogs()
         self.key_value = KeyValue()
-        self.otlp_endpoint = 'localhost:4317'
+        self.otlp_endpoint = 'localhost:7777'
         
         if 'OTLP_ENDPOINT' in os.environ:
             self.otlp_endpoint = os.environ["OTLP_ENDPOINT"]
-    
+        
     def create_key_value(self, key, value):  
-        '''Create Resource Attribute'''
+        '''Create Key Value Pair'''
         self.key_value.key = key
         self.key_value.value.string_value = value
         return self.key_value
@@ -37,9 +37,10 @@ class Log:
         self.log_record.severity_text = self.severity
         #self.log_record.severity_number = 9
         self.log_record.time_unix_nano = int(time.time()*1000000000)   
-        self.instrumentation_library_logs.log_records.extend([self.log_record])  
-        self.resource_logs.instrumentation_library_logs.extend([self.instrumentation_library_logs])
+        self.scope_logs.log_records.extend([self.log_record])       
+        self.resource_logs.scope_logs.extend([self.scope_logs])
         self.logs_data.resource_logs.extend([self.resource_logs])
+        print(self.logs_data)
         return self.logs_data
  
     def record(self):
