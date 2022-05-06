@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'Main'
+        )
+    }
+}
+shadowJar {
+    mainClassName = 'Main'
+}
+
+
+dependencies {
+    implementation 'io.grpc:grpc-protobuf:1.46.0'
+    implementation 'io.grpc:grpc-stub:1.46.0'
+    implementation 'io.opentelemetry.proto:opentelemetry-proto:0.16.0-alpha'
+    runtimeOnly 'io.grpc:grpc-netty-shaded:1.46.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
